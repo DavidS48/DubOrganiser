@@ -1,5 +1,5 @@
 
-from typing import Dict, Sequence, List, Tuple
+from typing import Dict, Sequence, List, Tuple, Union
 import os
 import eyed3
 
@@ -109,6 +109,16 @@ class Library:
                 self.albums.get_by_prefix(prefix),
                 self.tracks.get_by_prefix(prefix)
                 )
+
+    def get_all_by_prefix(
+            self,
+            prefix: str
+    ) -> Sequence[Union[Artist, Album, Track]]:
+        return (
+                self.artists.get_by_prefix(prefix) + 
+                self.albums.get_by_prefix(prefix) +
+                self.tracks.get_by_prefix(prefix)
+        )
 
     @classmethod
     def from_dir(cls, root_dir: str) -> "Library":

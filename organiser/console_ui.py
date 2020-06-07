@@ -2,8 +2,7 @@ import urwid
 import logging
 from typing import Any, List, Sequence, Callable, Union
 
-from wrappers import LibraryWrapper
-from music_library import Artist, Album, Track
+from .music_library import Library, Artist, Album, Track
 
 logging.basicConfig(filename="log.txt", level=logging.DEBUG)
 
@@ -25,7 +24,7 @@ urwid.register_signal(PlayerMonitor, "player_status")
 class Selector:
     def __init__(
             self,
-            library: LibraryWrapper,
+            library: Library,
             select_function: Callable[[Selectable], None]
         ) -> None:
         self.library = library
@@ -41,7 +40,7 @@ class Selector:
 
     def update_results(self, search: str) -> None:
         self.position = 0
-        self.current_results = self.library.search(search)
+        self.current_results = self.library.get_all_by_prefix(search)
 
     def make_selection(self) -> None:
         if self.current_results:
@@ -51,7 +50,7 @@ class Selector:
 class SelectorContainer(urwid.Pile):
     def __init__(
             self,
-            library: LibraryWrapper,
+            library: Library,
             select_function: Callable[[Selectable], None]
         ) -> None:
         self.selector = Selector(library, select_function)
@@ -113,7 +112,7 @@ class SelectorApp:
 
     def __init__(
             self,
-            library: LibraryWrapper,
+            library: Library,
             select_function: Callable[[Selectable], None],
             player_monitor: PlayerMonitor) -> None:
         self.player_monitor = player_monitor

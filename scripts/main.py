@@ -1,17 +1,18 @@
 import sys
 from typing import Sequence, Union
 
-from music_library import Library, Track, Album, Artist
-from console_ui import SelectorApp, PlayerMonitor
-from player import Player
-from wrappers import LibraryWrapper
+from organiser.music_library import Library, Track, Album, Artist
+from organiser.console_ui import SelectorApp, PlayerMonitor
+from organiser.player import make_player
 
 if __name__ == "__main__":
     monitor = PlayerMonitor()
     library = Library.from_dir(sys.argv[1])
-    library_wrapper = LibraryWrapper(library)
-
-    player = Player(monitor.update_status)
+    if len(sys.argv) > 2:
+        player_mode = sys.argv[2]
+    else:
+        player_mode = "mpg321"
+    player = make_player(monitor, player_mode)
     player.start()
 
     def play(item: Union[Artist, Album, Track]) -> None:
@@ -25,5 +26,5 @@ if __name__ == "__main__":
                 player.playlist(track)
 
 
-    selector = SelectorApp(library_wrapper, play, monitor)
+    selector = SelectorApp(library, play, monitor)
     selector.run()

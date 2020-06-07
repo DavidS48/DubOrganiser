@@ -4,20 +4,31 @@ import subprocess
 import time
 from typing import List, Callable
 
-from music_library import Track, Filename
+from .music_library import Track, Filename
 
 NotifyFunc = Callable[[str, List[Track]], None]
 
+def make_player(monitor, mp3_player):
+    if mp3_player == "mpg321":
+        player_command = "mpg321"
+    else:
+        player_command = "omxplayer"
+    return Player(monitor.update_status, player_command)
 
 class Player(Thread):
-    def __init__(self, notify_changes: NotifyFunc) -> None:
+    def __init__(
+            self,
+            notify_changes: NotifyFunc,
+            player_command: str
+    ) -> None:
         super(Player, self).__init__()
         self.queue = [] # type: List[Track]
         self.play_status = "Waiting for something to play."
         self.notify_changes = notify_changes
+        self.player_command = player_command
 
     def command(self, filename: Filename) -> List[str]:
-        return ["mpg321", filename]
+        return [self.player_command, filename]
 
     def playlist(self, track: Track) -> None:
         self.queue.append(track)
