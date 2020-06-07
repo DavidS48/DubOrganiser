@@ -10,16 +10,16 @@ NotifyFunc = Callable[[str, List[Track]], None]
 
 def make_player(monitor, mp3_player):
     if mp3_player == "mpg321":
-        player_command = "mpg321"
+        player_command = ["mpg321"]
     else:
-        player_command = "omxplayer"
+        player_command = ["omxplayer", "-o", "alsa"]
     return Player(monitor.update_status, player_command)
 
 class Player(Thread):
     def __init__(
             self,
             notify_changes: NotifyFunc,
-            player_command: str
+            player_command: List[str]
     ) -> None:
         super(Player, self).__init__()
         self.queue = [] # type: List[Track]
@@ -28,7 +28,7 @@ class Player(Thread):
         self.player_command = player_command
 
     def command(self, filename: Filename) -> List[str]:
-        return [self.player_command, filename]
+        return self.player_command +  [filename]
 
     def playlist(self, track: Track) -> None:
         self.queue.append(track)
