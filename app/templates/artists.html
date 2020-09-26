@@ -1,0 +1,10 @@
+<html>
+<head>
+<title>Artist List</title>
+<body>
+<ul>
+{% for artist in artists %}
+<li><a href="{{ url_for('albums', artist_name = artist.name) }}">{{artist.name}}</a></li>
+{% endfor %}
+</ul>
+</body>
