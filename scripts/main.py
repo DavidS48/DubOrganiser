@@ -5,6 +5,7 @@ from organiser.music_library import Library, Track, Album, Artist
 from organiser.console_ui import SelectorApp, PlayerMonitor
 from organiser.player import make_player
 
+
 if __name__ == "__main__":
     monitor = PlayerMonitor()
     library = Library.from_dir(sys.argv[1])

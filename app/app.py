@@ -8,8 +8,13 @@ from organiser.player import make_player
 
 
 class FlaskMonitor:
+    def __init__(self):
+        self.current_status = "Not started"
+        self.playlist = []
+        
     def update_status(self, play_status, queue):
-        pass
+        self.current_status = play_status
+        self.playlist = queue
 
 
 app = Flask(__name__)
@@ -33,7 +38,7 @@ def albums(artist_name):
     print(artist_name)
     print(artist.name)
     print(artist.albums)
-    return render_template("albums.html", albums = artist.albums.values())
+    return render_template("albums.html", artist_name = artist_name, albums = artist.albums.values())
 
 @app.route("/artists/<artist_name>/albums/<album_name>/play")
 def play_album(artist_name, album_name):
@@ -43,6 +48,11 @@ def play_album(artist_name, album_name):
         print("Got track")
         player.playlist(track)
         print(f"Playing {track.title}")
-    return redirect(url_for("artists", message="New tracks added to playlist!"))
+    return redirect(url_for("playlist", message="New tracks added to playlist!"))
 
+@app.route("/playlist")
+def playlist():
+    print(monitor.current_status)
+    print(monitor.playlist)
+    return render_template("playlist.html", status=monitor.current_status, playlist=monitor.playlist)
 

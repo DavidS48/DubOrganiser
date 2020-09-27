@@ -124,6 +124,7 @@ class Library:
     def from_dir(cls, root_dir: str) -> "Library":
         library = cls()
         for dir_name, sub_dir_list, file_list in os.walk(root_dir):
+            print(dir_name, file_list)
             for file_name in file_list:
                 if os.path.splitext(file_name)[1] == ".mp3":
                     file_path = os.path.join(dir_name, file_name)

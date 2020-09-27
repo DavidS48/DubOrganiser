@@ -1,10 +1,11 @@
-<html>
-<head>
-<title>Artist List</title>
-<body>
+{% extends 'base.html' %}
+
+{% block title %}Artist List{% endblock %}
+{% block content %}
+<h1>Browse Artists</h1>
 <ul>
 {% for artist in artists %}
 <li><a href="{{ url_for('albums', artist_name = artist.name) }}">{{artist.name}}</a></li>
 {% endfor %}
 </ul>
-</body>
+{% endblock %}

@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block title %}Current Playlist{% endblock %}
+{% block content %}
+<p>{{status}}</p>
+<p>Current Playlist:</p>
+<ul>{% for track in playlist %}
+	<li> {{track.artist}} - {{track.title}}</li>
+{% endfor %}</ul>
+{% endblock %}
