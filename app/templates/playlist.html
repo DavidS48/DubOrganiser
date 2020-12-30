@@ -1,9 +1,14 @@
 {% extends 'base.html' %}
 {% block title %}Current Playlist{% endblock %}
 {% block content %}
-<p>{{status}}</p>
+<p>{{status}}
+  {% if playing  %}
+    <a href="{{url_for('skip_track')}}">(skip)</a>
+  {% endif %}
+</p>
 <p>Current Playlist:</p>
 <ul>{% for track in playlist %}
 	<li> {{track.artist}} - {{track.title}}</li>
 {% endfor %}</ul>
+<p>(<a href="{{url_for('clear_playlist')}}">clear</a>)</p>
 {% endblock %}

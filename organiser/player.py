@@ -23,7 +23,9 @@ class Player(Thread):
     ) -> None:
         super(Player, self).__init__()
         self.queue = [] # type: List[Track]
+        self.current_player = None # type: Optional[subprocess.Popen]
         self.play_status = "Waiting for something to play."
+        self.playing = False
         self.notify_changes = notify_changes
         self.player_command = player_command
 
@@ -32,11 +34,20 @@ class Player(Thread):
 
     def playlist(self, track: Track) -> None:
         self.queue.append(track)
-        self.notify_changes(self.play_status, self.queue)
+        self.notify_changes(self.play_status, self.queue, playing = self.playing)
+
+    def clear_queue(self) -> None:
+        self.queue = [] # type: List[Track]
+        self.notify_changes(self.play_status, self.queue, playing = self.playing)
 
     def update_status(self, message: str) -> None:
         self.play_status = message
-        self.notify_changes(message, self.queue)
+        self.notify_changes(message, self.queue, playing = self.playing)
+
+    def skip_track(self)-> None:
+        print("Player skipping.")
+        if self.current_player is not None:
+            self.current_player.kill()
 
     def run(self) -> None:
         print("running")
@@ -44,10 +55,15 @@ class Player(Thread):
             try:
                 next_track = self.queue.pop(0)
                 filename = next_track.filename
+                self.playing = True
                 self.update_status(f"Now playing: {next_track.artist} - {next_track.title}")
-                subprocess.run(self.command(filename), stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
+                #subprocess.run(self.command(filename), stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
+                self.current_player = subprocess.Popen(self.command(filename), stderr=subprocess.DEVNULL, stdout=subprocess.DEVNULL)
+                self.current_player.wait()
             except IndexError:
                 self.update_status("Waiting for something to play.")
+                self.playing = False
+                self.current_player = None
                 time.sleep(0.1)
 
 

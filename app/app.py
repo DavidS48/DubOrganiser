@@ -1,4 +1,5 @@
 import sys
+import os
 
 from flask import Flask, render_template, url_for, redirect
 
@@ -11,17 +12,20 @@ class FlaskMonitor:
     def __init__(self):
         self.current_status = "Not started"
         self.playlist = []
-        
-    def update_status(self, play_status, queue):
+        self.playing = False
+
+    def update_status(self, play_status, queue, playing = False):
         self.current_status = play_status
         self.playlist = queue
+        self.playing = playing
 
 
 app = Flask(__name__)
-print("Loading library")
 monitor = FlaskMonitor()
-library = Library.from_dir("/home/david/Music/")
-player_mode="mpg321"
+player_mode=os.getenv("MUSIC_PLAYER")
+library_dir = os.getenv("MUSIC_DIR")
+print("Loading library")
+library = Library.from_dir(library_dir)
 player = make_player(monitor, player_mode)
 player.start()
 print("Done")
@@ -50,9 +54,20 @@ def play_album(artist_name, album_name):
         print(f"Playing {track.title}")
     return redirect(url_for("playlist", message="New tracks added to playlist!"))
 
+@app.route("/skip_track")
+def skip_track():
+    print("Skipping track.")
+    player.skip_track()
+    return redirect(url_for("playlist", message="Playlist cleared."))
+
+@app.route("/clear_playlist")
+def clear_playlist():
+    player.clear_queue()
+    return redirect(url_for("playlist", message="Playlist cleared."))
+
 @app.route("/playlist")
 def playlist():
     print(monitor.current_status)
     print(monitor.playlist)
-    return render_template("playlist.html", status=monitor.current_status, playlist=monitor.playlist)
+    return render_template("playlist.html", status=monitor.current_status, playlist=monitor.playlist, playing = monitor.playing)
 
