@@ -10,5 +10,5 @@ pyparsing==2.4.7
 six==1.15.0
 typed-ast==1.4.1
 typing-extensions==3.7.4.2
-urwid==2.1.0
+urwid==4.0.7
 -e .
